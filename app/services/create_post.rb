@@ -3,8 +3,8 @@ module Services
     include ActiveModel::Validations
 
     def self.call(user, params)
-      @user = user
-      @post = @user.posts.create(params.require(:post).permit(:title, :text, :user_ip))
+      user = user
+      post = user.posts.create(params)
     end
 
   end

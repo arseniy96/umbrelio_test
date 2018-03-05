@@ -1,14 +1,14 @@
 module Services
   class CreateUser
 
-    # attr_accessor :user
-
     def self.call(params)
-      if User.find_by_login(params[:user][:login])
-        user = User.find_by_login(params[:user][:login])
-      else
-        user = User.create(params.require(:user).permit(:login))
-      end
+      user(params) || User.create(params)
+    end
+
+    private
+
+    def self.user(params)
+      user ||= User.find_by_login(params.dig(:login))
     end
 
   end
