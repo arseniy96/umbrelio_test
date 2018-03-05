@@ -1,7 +1,21 @@
-# This file should contain all the record creation needed to seed the database with its default values.
-# The data can then be loaded with the rails db:seed command (or created alongside the database with db:setup).
-#
-# Examples:
-#
-#   movies = Movie.create([{ name: 'Star Wars' }, { name: 'Lord of the Rings' }])
-#   Character.create(name: 'Luke', movie: movies.first)
+require 'net/http'
+require 'uri'
+
+ips = []
+logins = []
+50.times {ips << '192.168.1.' + rand(255).to_s}
+100.times {logins << (0..5).map {(65 + rand(26)).chr}.join.downcase}
+
+20.times do
+  uri = URI.parse('http://localhost:3000/posts')
+  http = Net::HTTP.new(uri.host, uri.port)
+  request = Net::HTTP::Post.new(uri.request_uri)
+  request.set_form_data({
+                            "user[login]" => logins[rand(100)] + '@example.com',
+                            "post[title]" => (0..10).map {(65 + rand(26)).chr}.join,
+                            "post[text]" => (0..20).map {(65 + rand(26)).chr}.join.downcase,
+                            "post[user_ip]" => ips[rand(50)]
+                        })
+
+  http.request(request)
+end
