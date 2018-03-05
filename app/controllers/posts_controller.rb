@@ -9,12 +9,12 @@ class PostsController < ApplicationController
     if user.valid?
       post = Services::CreatePost.call(user, params_post_hash)
       if post.valid?
-        render json: post
+        render json: post, status: 200
       else
-        render json: post.errors.full_messages
+        render json: post.errors.full_messages, status: 422
       end
     else
-      render json: user.errors.full_messages
+      render json: user.errors.full_messages, status: 422
     end
   end
 
@@ -25,19 +25,17 @@ class PostsController < ApplicationController
     ActiveRecord::Base.transaction do
       post.ratings.create(vote: vote)
     end
-    render json: post.ratings.average(:vote)
+    render json: post.ratings.average(:vote), status: 200
   end
 
   def top
-    @posts = Post.top(1)
-    render json: @posts.select(:id, :title, :text)
+    @posts = Post.top(10)
+    render json: @posts.select(:id, :title, :text), status: 200
   end
 
   def uniq_ip
-    hh = {}
-    ips = Post.pluck(:user_ip).uniq
-    ips.each {|ip| hh[ip] = Post.pluck(:user_id).uniq}
-    render json: hh.as_json
+    ips = Services::GroupByUserIp.call
+    render json: ips.as_json, status: 200
   end
 
 end
