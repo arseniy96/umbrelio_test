@@ -19,13 +19,7 @@ class PostsController < ApplicationController
   end
 
   def rate
-    post = Post.find(params[:post_id])
-    vote = params[:vote]
-
-    ActiveRecord::Base.transaction do
-      post.ratings.create(vote: vote)
-    end
-    render json: post.ratings.average(:vote), status: 200
+    render json: Services::EvaluatePost.call(params), status: 200
   end
 
   def top
