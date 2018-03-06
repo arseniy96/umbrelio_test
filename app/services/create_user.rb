@@ -2,13 +2,7 @@ module Services
   class CreateUser
 
     def self.call(params)
-      user(params) || User.create(params)
-    end
-
-    private
-
-    def self.user(params)
-      user ||= User.find_by_login(params.dig(:login))
+      User.find_by(login: params[:login]) || User.create(params)
     end
 
   end
